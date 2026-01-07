@@ -3,6 +3,7 @@ Executive Summary
 This project demonstrates a production-ready Serverless Microservice architecture deployed on Amazon Web Services (AWS) using Terraform. The system features a high-performance web dashboard that interacts with cloud storage through secure, temporary access protocols.
 
 🏗️ Technical Architecture
+![Project Architecture Diagram](architecture.png)
 Infrastructure as Code (IaC): Utilized Terraform to manage the full resource lifecycle, ensuring 100% reproducible environments and preventing configuration drift.
 
 Compute: Implemented AWS Lambda (Python 3.11) to handle backend logic on a per-request basis, significantly reducing operational costs compared to traditional servers.
