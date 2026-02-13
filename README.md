@@ -1,30 +1,11 @@
-🚀 Serverless Cloud Dashboard: Infrastructure-as-Code Project
-Executive Summary
-This project demonstrates a production-ready Serverless Microservice architecture deployed on Amazon Web Services (AWS) using Terraform. The system features a high-performance web dashboard that interacts with cloud storage through secure, temporary access protocols.
+🚀 Project Overview: Enterprise-Grade Serverless AI Intelligence Pipeline
+This project architected a high-performance Event-Driven AI Microservice focused on automated document intelligence. By bridging Infrastructure-as-Code (IaC) with Generative AI, I engineered a secure, scalable solution that automates document processing—taking raw user uploads and delivering instant, AI-distilled insights through an asynchronous cloud pipeline.
 
-🏗️ Technical Architecture
-![Project Architecture Diagram](architecture.png)
-Infrastructure as Code (IaC): Utilized Terraform to manage the full resource lifecycle, ensuring 100% reproducible environments and preventing configuration drift.
+🏗️ Engineering Highlights & Design Decisions
+Infrastructure as Code (IaC): Orchestrated the entire AWS ecosystem (S3, Lambda, API Gateway, IAM) using Terraform. This ensures environment parity, eliminates manual configuration errors, and allows for rapid, reproducible deployments across staging and production.
 
-Compute: Implemented AWS Lambda (Python 3.11) to handle backend logic on a per-request basis, significantly reducing operational costs compared to traditional servers.
+Asynchronous Event-Driven Pipeline: Leveraged S3 Event Notifications to decouple storage from compute. This architectural pattern ensures the system scales elastically, triggering the Python-based Lambda "inference engine" the millisecond a new object is persisted.
 
-API Management: Configured Amazon API Gateway to provide a secure, scalable entry point for the web dashboard.
+LLM Integration (Generative AI): Integrated Amazon Bedrock (Anthropic Claude 3.5 Sonnet) to perform advanced Natural Language Processing. I optimized prompt engineering within the Lambda environment to ensure low-latency, high-accuracy summarization of unstructured text.
 
-Storage & Security: Leveraged Amazon S3 for data persistence, utilizing IAM Least-Privilege Policies and S3 Presigned URLs to allow secure file downloads without exposing the bucket to the public internet.
-
-💡 Engineering Highlights
-Security-First Design: Implemented granular IAM roles for the Lambda "Brain," granting only the specific permissions needed to interact with the S3 bucket.
-
-DevOps Workflow: Integrated a seamless local-to-cloud workflow where code changes are automatically packaged and deployed via the Terraform CLI.
-
-Dynamic UX: Developed a responsive HTML/CSS dashboard that provides real-time status updates from the cloud environment.
-
-🛠️ Deployment Instructions
-Initialize: terraform init to download AWS providers.
-
-Plan: terraform plan to review infrastructure changes.
-
-Deploy: terraform apply -auto-approve to go live.
-
-🚀 Why This Project Matters
-By using Terraform, I’ve moved away from manual "click-ops" to a professional DevOps methodology. This approach allows a company to deploy this entire architecture across multiple global regions in seconds with perfect consistency.
+DevSecOps & Cloud Security: Strictly enforced the Principle of Least Privilege (PoLP) through fine-grained IAM policies. Enhanced data transit security by utilizing S3 Presigned URLs, mitigating the risks associated with public bucket access while maintaining a seamless user experience.

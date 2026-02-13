@@ -86,7 +86,54 @@ resource "aws_lambda_permission" "api_gw" {
   source_arn    = "${aws_apigatewayv2_api.lambda_api.execution_arn}/*/*"
 }
 
-# 6. THE RESULT (Prints your URL)
+
 output "base_url" {
   value = "${aws_apigatewayv2_api.lambda_api.api_endpoint}/hello"
+}
+resource "aws_dynamodb_table" "project_db" {
+  name           = "UserUploads"
+  billing_mode   = "PAY_PER_REQUEST" # Perfect for beginners: no cost if not used
+  hash_key       = "UserId"
+
+  attribute {
+    name = "UserId"
+    type = "S" # 'S' means String
+  }
+}
+resource "aws_iam_role_policy" "dynamo_policy" {
+  name = "lambda_dynamo_policy"
+  
+  # CHANGE THIS LINE to match your actual role name
+  role = aws_iam_role.lambda_role.id 
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action   = ["dynamodb:PutItem", "dynamodb:GetItem"]
+      Effect   = "Allow"
+      Resource = "${aws_dynamodb_table.project_db.arn}"
+    }]
+  })
+}
+resource "aws_cognito_user_pool" "pool" {
+  name = "project_user_pool"
+}
+
+resource "aws_cognito_user_pool_client" "client" {
+  name         = "my-app-client"
+  user_pool_id = aws_cognito_user_pool.pool.id # This links it to your 'pool'
+}
+
+# 2. THE AUTHORIZER (Now this will work!)
+resource "aws_apigatewayv2_authorizer" "auth" {
+  api_id           = aws_apigatewayv2_api.lambda_api.id
+  authorizer_type  = "JWT"
+  identity_sources = ["$request.header.Authorization"]
+  name             = "cognito-authorizer"
+  
+  jwt_configuration {
+    # This matches the 'client' resource we just created above
+    audience = [aws_cognito_user_pool_client.client.id] 
+    issuer   = "https://${aws_cognito_user_pool.pool.endpoint}"
+  }
 }
