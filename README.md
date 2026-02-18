@@ -1,4 +1,4 @@
-🚀 **Live Demo:** [https://main.d3firx0kpnezna.amplifyapp.com/]
+🚀 **Live Demo:** [https://main.d2g1xi29ugsf8y.amplifyapp.com/]
 
 🛠️ Backend API: https://3sxhm8etp1.execute-api.us-east-1.amazonaws.com/hello
 
