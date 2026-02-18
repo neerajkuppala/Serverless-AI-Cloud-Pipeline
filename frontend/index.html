@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h2>Neeraj's AI Summarizer</h2>
+    <textarea id="userInput" placeholder="Paste your text here..."></textarea><br>
+    <button onclick="summarize()">Generate Summary</button>
+    <p id="result"></p>
+
+    <script>
+        async function summarize() {
+        const text = document.getElementById('userInput').value;
+        // Corrected 'fetch' spelling and added your live URL
+        const response = await fetch('https://wbzpn7v4ja.execute-api.us-east-1.amazonaws.com/hello', {
+            method: 'POST',
+            body: JSON.stringify({ "text_to_summarize": text })
+        });
+        const data = await response.json();
+        document.getElementById('result').innerText = data.summary;
+    }
+    </script>
+</body>
+</html>
