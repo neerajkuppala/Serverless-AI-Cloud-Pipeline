@@ -17,8 +17,8 @@ resource "aws_iam_role" "lambda_role" {
   })
 }
 
-# 3. THE ZIPPER (This was missing!)
-# It goes up one level to find your code in the backend folder
+# 3. THE ZIPPER
+# Goes up one level to find your code in the backend folder
 data "archive_file" "lambda_zip" {
   type        = "zip"
   source_file = "${path.module}/../backend/api_handler.py"
@@ -53,9 +53,10 @@ resource "aws_apigatewayv2_integration" "lambda_integration" {
   integration_uri  = aws_lambda_function.my_microservice.invoke_arn
 }
 
+# CHANGED TO POST: This allows your website to send text data to the API
 resource "aws_apigatewayv2_route" "lambda_route" {
   api_id    = aws_apigatewayv2_api.lambda_api.id
-  route_key = "GET /hello"
+  route_key = "POST /hello"
   target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
 }
 
@@ -70,21 +71,21 @@ resource "aws_dynamodb_table" "project_db" {
   }
 }
 
-# OUTPUTS
-output "base_url" {
-  value = "${aws_apigatewayv2_api.lambda_api.api_endpoint}/hello"
-}
-# This gives Lambda permission to run and create logs
+# 7. PERMISSIONS & LOGS
 resource "aws_iam_role_policy_attachment" "lambda_logs" {
   role       = aws_iam_role.lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
+
 resource "aws_lambda_permission" "api_gw" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.my_microservice.function_name
   principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.lambda_api.execution_arn}/*/*"
+}
 
-  # This links it specifically to your API Gateway instance
-  source_arn = "${aws_apigatewayv2_api.lambda_api.execution_arn}/*/*"
+# OUTPUTS
+output "base_url" {
+  value = "${aws_apigatewayv2_api.lambda_api.api_endpoint}/hello"
 }
