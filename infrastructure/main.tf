@@ -89,3 +89,9 @@ resource "aws_lambda_permission" "api_gw" {
 output "base_url" {
   value = "${aws_apigatewayv2_api.lambda_api.api_endpoint}/hello"
 }
+# Add this next to your POST /hello route
+resource "aws_apigatewayv2_route" "options_route" {
+  api_id    = aws_apigatewayv2_api.lambda_api.id
+  route_key = "OPTIONS /hello"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
+}
