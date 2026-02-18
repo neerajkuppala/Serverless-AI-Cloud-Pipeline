@@ -1,12 +1,12 @@
-# 1. THE STORAGE (S3 Bucket)
+# 1. THE STORAGE (Unique Name)
 resource "aws_s3_bucket" "my_bucket" {
-  bucket        = "neeraj-serverless-project-2026"
+  bucket        = "neeraj-serverless-project-v2-2026"
   force_destroy = true 
 }
 
-# 2. THE SECURITY (IAM Role)
+# 2. THE SECURITY (Unique Role Name)
 resource "aws_iam_role" "lambda_role" {
-  name = "microservice_lambda_role_v2"
+  name = "microservice_lambda_role_v3"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -17,31 +17,18 @@ resource "aws_iam_role" "lambda_role" {
   })
 }
 
-# S3 Permissions
-resource "aws_iam_role_policy" "s3_access" {
-  name = "lambda_s3_policy"
-  role = aws_iam_role.lambda_role.id
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Action   = ["s3:GetObject", "s3:ListBucket"]
-      Effect   = "Allow"
-      Resource = ["${aws_s3_bucket.my_bucket.arn}", "${aws_s3_bucket.my_bucket.arn}/*"]
-    }]
-  })
-}
-
-# 3. THE ZIPPER (Points to your backend folder)
+# 3. THE ZIPPER (This was missing!)
+# It goes up one level to find your code in the backend folder
 data "archive_file" "lambda_zip" {
   type        = "zip"
   source_file = "${path.module}/../backend/api_handler.py"
   output_path = "${path.module}/lambda_function_payload.zip"
 }
 
-# 4. THE BRAIN (Lambda Function)
+# 4. THE BRAIN (Unique Function Name)
 resource "aws_lambda_function" "my_microservice" {
   filename         = data.archive_file.lambda_zip.output_path
-  function_name    = "NeerajMicroserviceAPI"
+  function_name    = "NeerajMicroserviceAPI_v2"
   role             = aws_iam_role.lambda_role.arn
   handler          = "api_handler.lambda_handler"
   runtime          = "python3.11"
@@ -50,7 +37,7 @@ resource "aws_lambda_function" "my_microservice" {
 
 # 5. THE FRONT DOOR (API Gateway)
 resource "aws_apigatewayv2_api" "lambda_api" {
-  name          = "NeerajMicroserviceGateway"
+  name          = "NeerajMicroserviceGateway_v2"
   protocol_type = "HTTP"
 }
 
@@ -74,7 +61,7 @@ resource "aws_apigatewayv2_route" "lambda_route" {
 
 # 6. DATABASE (DynamoDB)
 resource "aws_dynamodb_table" "project_db" {
-  name         = "UserUploads"
+  name         = "UserUploads_v2"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "UserId"
   attribute {
@@ -86,4 +73,18 @@ resource "aws_dynamodb_table" "project_db" {
 # OUTPUTS
 output "base_url" {
   value = "${aws_apigatewayv2_api.lambda_api.api_endpoint}/hello"
+}
+# This gives Lambda permission to run and create logs
+resource "aws_iam_role_policy_attachment" "lambda_logs" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+resource "aws_lambda_permission" "api_gw" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.my_microservice.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  # This links it specifically to your API Gateway instance
+  source_arn = "${aws_apigatewayv2_api.lambda_api.execution_arn}/*/*"
 }
