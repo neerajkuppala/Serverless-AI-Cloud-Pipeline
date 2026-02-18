@@ -41,7 +41,7 @@
             btn.disabled = true;
 
             try {
-                // This is your live AWS Gateway URL
+                // YOUR CURRENT ACTIVE LIVE URL
                 const API_URL = 'https://3sxhm8etp1.execute-api.us-east-1.amazonaws.com/hello';
 
                 const response = await fetch(API_URL, {
@@ -52,12 +52,11 @@
 
                 const data = await response.json();
                 resultDiv.style.display = 'block';
-                // Display the response message or summary
-                summarySpan.innerText = data.summary || data.message || "Processed successfully!";
+                summarySpan.innerText = data.summary || data.message || "Success! Check AWS Logs.";
 
             } catch (error) {
                 console.error("Error:", error);
-                alert("Connection failed. Check if your API is deployed.");
+                alert("Connection failed. Check your API link.");
             } finally {
                 btn.innerText = "Generate Summary";
                 btn.disabled = false;
