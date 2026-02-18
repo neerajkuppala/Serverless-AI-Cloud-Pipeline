@@ -1,4 +1,6 @@
-🚀 **Live Demo:** ["https://3sxhm8etp1.execute-api.us-east-1.amazonaws.com/hello"]
+🚀 **Live Demo:** [https://main.d3firx0kpnezna.amplifyapp.com/]
+
+🛠️ Backend API: https://3sxhm8etp1.execute-api.us-east-1.amazonaws.com/hello
 
 🚀 Project Overview: Enterprise-Grade Serverless AI Intelligence Pipeline
 This project architected a high-performance Event-Driven AI Microservice focused on automated document intelligence. By bridging Infrastructure-as-Code (IaC) with Generative AI, I engineered a secure, scalable solution that automates document processing—taking raw user uploads and delivering instant, AI-distilled insights through an asynchronous cloud pipeline.
