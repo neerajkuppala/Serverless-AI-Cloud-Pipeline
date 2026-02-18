@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neeraj's AI Summarizer</title>
+    <title>Neeraj's AI Summarizer v3.0</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background-color: #f4f7f6; }
         .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -11,56 +11,37 @@
         textarea { width: 100%; height: 200px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 20px; box-sizing: border-box; }
         button { background-color: #3498db; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; transition: 0.3s; }
         button:hover { background-color: #2980b9; }
-        button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
-        #result { margin-top: 30px; padding: 20px; background: #e8f4fd; border-left: 5px solid #3498db; border-radius: 4px; display: none; word-wrap: break-word; }
+        #result { margin-top: 30px; padding: 20px; background: #e8f4fd; border-left: 5px solid #3498db; border-radius: 4px; display: none; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>🚀 Neeraj's AI Summarizer</h2>
-        <p>Paste your text below to generate an AI-powered summary.</p>
+        <h2>🚀 Neeraj's AI Summarizer v3.0</h2>
         <textarea id="userInput" placeholder="Paste your text here..."></textarea><br>
         <button onclick="summarize()" id="btn">Generate Summary</button>
-        
-        <div id="result">
-            <strong>Summary:</strong><br>
-            <span id="summaryText"></span>
-        </div>
+        <div id="result"><strong>Summary:</strong><br><span id="summaryText"></span></div>
     </div>
-
     <script>
         async function summarize() {
             const text = document.getElementById('userInput').value;
             const btn = document.getElementById('btn');
             const resultDiv = document.getElementById('result');
             const summarySpan = document.getElementById('summaryText');
-
             if (!text) { alert("Please paste some text first!"); return; }
-
-            btn.innerText = "Summarizing...";
-            btn.disabled = true;
-
+            btn.innerText = "Summarizing..."; btn.disabled = true;
             try {
-                // YOUR CURRENT ACTIVE LIVE URL
+                // YOUR LIVE URL (VERIFIED)
                 const API_URL = 'https://3sxhm8etp1.execute-api.us-east-1.amazonaws.com/hello';
-
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ "text_to_summarize": text })
                 });
-
                 const data = await response.json();
                 resultDiv.style.display = 'block';
-                summarySpan.innerText = data.summary || data.message || "Success! Check AWS Logs.";
-
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Connection failed. Check your API link.");
-            } finally {
-                btn.innerText = "Generate Summary";
-                btn.disabled = false;
-            }
+                summarySpan.innerText = data.summary || data.message || "Success!";
+            } catch (error) { console.error("Error:", error); alert("Connection failed."); } 
+            finally { btn.innerText = "Generate Summary"; btn.disabled = false; }
         }
     </script>
 </body>
