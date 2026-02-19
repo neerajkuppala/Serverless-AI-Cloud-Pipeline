@@ -3,10 +3,10 @@ import boto3
 import uuid
 from datetime import datetime
 
-# 1. Initialize the DynamoDB resource outside the handler
-dynamodb = boto3.resource('dynamodb')
-# REPLACE 'YourTableNameHere' with your actual DynamoDB table name from AWS
-table = dynamodb.Table('YourTableNameHere') 
+# 1. Initialize the DynamoDB resource
+# Make sure 'us-east-1' matches your AWS region!
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+table = dynamodb.Table('YourExactTableNameHere') 
 
 def lambda_handler(event, context):
     headers = {
@@ -16,6 +16,7 @@ def lambda_handler(event, context):
         "Access-Control-Allow-Headers": "Content-Type"
     }
 
+    # Handle OPTIONS pre-flight
     http_method = event.get('requestContext', {}).get('http', {}).get('method')
     if http_method == 'OPTIONS':
         return {'statusCode': 204, 'headers': headers, 'body': ''}
@@ -25,16 +26,16 @@ def lambda_handler(event, context):
         body = json.loads(body_str)
         text = body.get('text_to_summarize', 'No text provided')
 
-        # Your Summary Logic
+        # AI Summary Logic
         summary = f"Summary of your text: {text[:100]}..."
 
-        # 2. SAVE TO DYNAMODB (The missing part!)
+        # 2. THE FIX: Using 'file_id' to match your AWS Partition Key
         table.put_item(
             Item={
-                'id': str(uuid.uuid4()),        # Creates a unique ID for each entry
+                'file_id': str(uuid.uuid4()),  # THIS MUST BE 'file_id'
                 'original_text': text,
                 'summary_result': summary,
-                'timestamp': datetime.now().isoformat()
+                'created_at': datetime.now().isoformat()
             }
         )
 
@@ -42,12 +43,12 @@ def lambda_handler(event, context):
             'statusCode': 200,
             'headers': headers,
             'body': json.dumps({
-                'message': 'Success and Saved!',
+                'message': 'Saved successfully!',
                 'summary': summary
             })
         }
     except Exception as e:
-        print(f"Error: {str(e)}") # This helps you see errors in CloudWatch
+        print(f"ERROR: {str(e)}")
         return {
             'statusCode': 500,
             'headers': headers,
