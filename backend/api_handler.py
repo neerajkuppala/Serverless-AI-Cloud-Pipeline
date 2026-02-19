@@ -1,7 +1,14 @@
 import json
+import boto3
+import uuid
+from datetime import datetime
+
+# 1. Initialize the DynamoDB resource outside the handler
+dynamodb = boto3.resource('dynamodb')
+# REPLACE 'YourTableNameHere' with your actual DynamoDB table name from AWS
+table = dynamodb.Table('YourTableNameHere') 
 
 def lambda_handler(event, context):
-    # Standard headers required for the browser to "trust" the response
     headers = {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
@@ -9,34 +16,38 @@ def lambda_handler(event, context):
         "Access-Control-Allow-Headers": "Content-Type"
     }
 
-    # Handle the 'OPTIONS' pre-flight request sent by browsers automatically
-    # This is crucial for fixing "Connection Failed"
     http_method = event.get('requestContext', {}).get('http', {}).get('method')
     if http_method == 'OPTIONS':
-        return {
-            'statusCode': 204,
-            'headers': headers,
-            'body': ''
-        }
+        return {'statusCode': 204, 'headers': headers, 'body': ''}
 
     try:
-        # Load the incoming text
         body_str = event.get('body', '{}')
         body = json.loads(body_str)
         text = body.get('text_to_summarize', 'No text provided')
 
-        # Logic: Your "AI" processing
+        # Your Summary Logic
         summary = f"Summary of your text: {text[:100]}..."
+
+        # 2. SAVE TO DYNAMODB (The missing part!)
+        table.put_item(
+            Item={
+                'id': str(uuid.uuid4()),        # Creates a unique ID for each entry
+                'original_text': text,
+                'summary_result': summary,
+                'timestamp': datetime.now().isoformat()
+            }
+        )
 
         return {
             'statusCode': 200,
             'headers': headers,
             'body': json.dumps({
-                'message': 'Success!',
+                'message': 'Success and Saved!',
                 'summary': summary
             })
         }
     except Exception as e:
+        print(f"Error: {str(e)}") # This helps you see errors in CloudWatch
         return {
             'statusCode': 500,
             'headers': headers,
