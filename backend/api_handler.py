@@ -1,11 +1,10 @@
-# Version 10 - Testing Database
 import json
 import boto3
 import uuid
 from datetime import datetime
 
-# Make sure this name matches your AWS Console EXACTLY (Case-Sensitive!)
-TABLE_NAME = 'NeerajSummariesTable' 
+# Table Name matches your AWS setup
+TABLE_NAME = 'UserUploads_v2' 
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table(TABLE_NAME)
@@ -23,30 +22,35 @@ def lambda_handler(event, context):
 
     try:
         body = json.loads(event.get('body', '{}'))
-        text = body.get('text_to_summarize', 'No text')
-        summary = f"Summary: {text[:50]}..."
+        text = body.get('text_to_summarize', 'No text provided')
+        
+        generated_summary = f"Summary: {text[:100]}..."
 
         # SAVE ATTEMPT
-        print(f"Saving to {TABLE_NAME} with file_id...")
+        # THE FIX: Changed 'file_id' to 'UserId' to match your Partition Key
         table.put_item(
             Item={
-                'file_id': str(uuid.uuid4()), # Matches your Partition Key exactly
-                'text_content': text,
-                'summary_text': summary,
-                'date': datetime.now().isoformat()
+                'UserId': str(uuid.uuid4()), 
+                'original_text': text,
+                'summary': generated_summary,
+                'timestamp': datetime.now().isoformat()
             }
         )
-        
+
         return {
             'statusCode': 200,
             'headers': headers,
-            'body': json.dumps({'summary': summary, 'db_status': 'saved'})
+            'body': json.dumps({
+                'summary': generated_summary
+            })
         }
+
     except Exception as e:
-        # This print will tell us the EXACT error in CloudWatch
-        print(f"CRITICAL ERROR: {str(e)}")
+        print(f"ERROR: {str(e)}")
         return {
-            'statusCode': 500,
+            'statusCode': 200, 
             'headers': headers,
-            'body': json.dumps({'error': str(e)})
+            'body': json.dumps({
+                'summary': f"Error: {str(e)}"
+            })
         }
