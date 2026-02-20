@@ -5,7 +5,7 @@
 # Serverless AI Text Summarizer 🚀
 
 A full-stack, cloud-native application that leverages AWS serverless architecture to summarize long-form text and archive it in a NoSQL database.
-
+![System Architecture](architecture.png)
 ## 🌟 Key Features
 * **AI Summarization:** Processes raw text to generate concise, readable summaries.
 * **Serverless Architecture:** Utilizes AWS Lambda for compute, ensuring high scalability and zero idle costs.
