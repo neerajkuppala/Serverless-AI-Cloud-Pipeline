@@ -25,6 +25,7 @@ A full-stack, cloud-native application that leverages AWS serverless architectur
 * **Cloud Provider:** AWS (Amplify, Lambda, DynamoDB, API Gateway, IAM, CloudWatch)
 * **Infrastructure:** Boto3 (AWS SDK for Python)
 * **Version Control:** Git & GitHub
+* 
 ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 ![DynamoDB](https://img.shields.io/badge/Amazon%20DynamoDB-4053D6?style=for-the-badge&logo=Amazon%20DynamoDB&logoColor=white)
