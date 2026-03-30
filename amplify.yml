@@ -4,7 +4,6 @@ frontend:
     build:
       commands: []
   artifacts:
-    # This is the magic line that fixes the 404 error
     baseDirectory: frontend
     files:
       - '**/*'
